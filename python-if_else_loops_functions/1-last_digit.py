@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 import random
 number = random.randint(-10000, 10000)
 # Correctly handle Python's modulo behavior for negative numbers
