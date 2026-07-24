@@ -51,7 +51,7 @@ class Square:
         return self.__size ** 2
 
     def my_print(self):
-        """Print the square with the character #, respecting position offsets."""
+        """Print the square with character #, taking position into account."""
         if self.__size == 0:
             print("")
             return
