@@ -22,18 +22,16 @@ Check integer_validator() with valid integers:
     >>> bg.integer_validator("age", 1)
 
 Check integer_validator() missing 2 arguments:
-    >>> try:
-    ...     bg.integer_validator()
-    ... except TypeError as e:
-    ...     print(e)
-    BaseGeometry.integer_validator() missing 2 required positional arguments: 'name' and 'value'
+    >>> bg.integer_validator()
+    Traceback (most recent call last):
+    ...
+    TypeError: integer_validator() missing 2 required positional arguments: 'name' and 'value'
 
 Check integer_validator() missing 1 argument:
-    >>> try:
-    ...     bg.integer_validator("age")
-    ... except TypeError as e:
-    ...     print(e)
-    BaseGeometry.integer_validator() missing 1 required positional argument: 'value'
+    >>> bg.integer_validator("age")
+    Traceback (most recent call last):
+    ...
+    TypeError: integer_validator() missing 1 required positional argument: 'value'
 
 Check integer_validator() with invalid integer values:
     >>> bg.integer_validator("age", 0)
