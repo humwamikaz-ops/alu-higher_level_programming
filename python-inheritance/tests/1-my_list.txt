@@ -12,6 +12,11 @@ Testing initialization:
     >>> issubclass(MyList, list)
     True
 
+Testing empty list:
+    >>> empty_list = MyList()
+    >>> empty_list.print_sorted()
+    []
+
 Testing append and print_sorted:
     >>> my_list.append(1)
     >>> my_list.append(4)
