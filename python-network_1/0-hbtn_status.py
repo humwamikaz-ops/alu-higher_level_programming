@@ -1,9 +1,10 @@
 #!/usr/bin/python3
-"""fetches https://alu-intranet.hbtn.io/status and displays the response body"""
+"""fetches https://alu-intranet.hbtn.io/status and displays the body"""
 import urllib.request
 
 if __name__ == "__main__":
-    with urllib.request.urlopen("https://alu-intranet.hbtn.io/status") as response:
+    url = "https://alu-intranet.hbtn.io/status"
+    with urllib.request.urlopen(url) as response:
         body = response.read()
         print("Body response:")
         print("\t- type: {}".format(type(body)))
