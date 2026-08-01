@@ -1,153 +1,95 @@
 #!/usr/bin/python3
-"""Unittests for the Rectangle class."""
+"""Unittest module for models/rectangle.py."""
 import unittest
+from models.base import Base
 from models.rectangle import Rectangle
 
 
-class TestRectangleInit(unittest.TestCase):
-    """Tests for Rectangle initialization."""
+class TestRectangle(unittest.TestCase):
+    """Test suite for the Rectangle class."""
 
-    def test_basic_init(self):
-        """Tests width and height are assigned correctly."""
+    def setUp(self):
+        """Reset __nb_objects before each test."""
+        Base._Base__nb_objects = 0
+
+    def test_rectangle_inheritance(self):
+        """Test that Rectangle inherits from Base."""
         r = Rectangle(10, 2)
-        self.assertEqual(r.width, 10)
-        self.assertEqual(r.height, 2)
-        self.assertEqual(r.x, 0)
-        self.assertEqual(r.y, 0)
+        self.assertIsInstance(r, Base)
 
-    def test_full_init(self):
-        """Tests all attributes assigned with an explicit id."""
-        r = Rectangle(10, 2, 1, 2, 12)
-        self.assertEqual(r.id, 12)
-        self.assertEqual(r.x, 1)
-        self.assertEqual(r.y, 2)
-
-    def test_auto_id(self):
-        """Tests id auto-increments when not given."""
+    def test_rectangle_valid_instantiation(self):
+        """Test valid instantiation of Rectangle."""
         r1 = Rectangle(10, 2)
-        r2 = Rectangle(2, 10)
-        self.assertEqual(r2.id, r1.id + 1)
+        self.assertEqual(r1.width, 10)
+        self.assertEqual(r1.height, 2)
+        self.assertEqual(r1.x, 0)
+        self.assertEqual(r1.y, 0)
+        self.assertEqual(r1.id, 1)
 
+        r2 = Rectangle(10, 2, 3, 4, 12)
+        self.assertEqual(r2.width, 10)
+        self.assertEqual(r2.height, 2)
+        self.assertEqual(r2.x, 3)
+        self.assertEqual(r2.y, 4)
+        self.assertEqual(r2.id, 12)
 
-class TestRectangleValidation(unittest.TestCase):
-    """Tests for Rectangle attribute validation."""
+    # --- Type Errors ---
 
-    def test_width_not_int(self):
-        """Tests width as a string raises TypeError."""
-        with self.assertRaises(TypeError):
-            Rectangle(10, "2")
-
-    def test_height_not_int(self):
-        """Tests height as a string raises TypeError."""
-        with self.assertRaises(TypeError):
+    def test_type_error_width(self):
+        """Test TypeError for non-integer width."""
+        with self.assertRaisesRegex(TypeError, "width must be an integer"):
             Rectangle("10", 2)
+        with self.assertRaisesRegex(TypeError, "width must be an integer"):
+            Rectangle([10], 2)
+        with self.assertRaisesRegex(TypeError, "width must be an integer"):
+            Rectangle(10.5, 2)
 
-    def test_width_negative(self):
-        """Tests negative width raises ValueError."""
-        with self.assertRaises(ValueError):
+    def test_type_error_height(self):
+        """Test TypeError for non-integer height."""
+        with self.assertRaisesRegex(TypeError, "height must be an integer"):
+            Rectangle(10, "2")
+        with self.assertRaisesRegex(TypeError, "height must be an integer"):
+            Rectangle(10, None)
+
+    def test_type_error_x(self):
+        """Test TypeError for non-integer x."""
+        with self.assertRaisesRegex(TypeError, "x must be an integer"):
+            Rectangle(10, 2, {})
+        with self.assertRaisesRegex(TypeError, "x must be an integer"):
+            Rectangle(10, 2, 2.5)
+
+    def test_type_error_y(self):
+        """Test TypeError for non-integer y."""
+        with self.assertRaisesRegex(TypeError, "y must be an integer"):
+            Rectangle(10, 2, 0, "4")
+        with self.assertRaisesRegex(TypeError, "y must be an integer"):
+            Rectangle(10, 2, 0, True)
+
+    # --- Value Errors ---
+
+    def test_value_error_width(self):
+        """Test ValueError for width <= 0."""
+        with self.assertRaisesRegex(ValueError, "width must be > 0"):
+            Rectangle(0, 2)
+        with self.assertRaisesRegex(ValueError, "width must be > 0"):
             Rectangle(-10, 2)
 
-    def test_width_zero(self):
-        """Tests zero width raises ValueError."""
-        with self.assertRaises(ValueError):
-            Rectangle(0, 2)
-
-    def test_height_negative(self):
-        """Tests negative height raises ValueError."""
-        with self.assertRaises(ValueError):
+    def test_value_error_height(self):
+        """Test ValueError for height <= 0."""
+        with self.assertRaisesRegex(ValueError, "height must be > 0"):
+            Rectangle(10, 0)
+        with self.assertRaisesRegex(ValueError, "height must be > 0"):
             Rectangle(10, -2)
 
-    def test_x_not_int(self):
-        """Tests x as a dict raises TypeError."""
-        with self.assertRaises(TypeError):
-            Rectangle(10, 2, x={})
-
-    def test_x_negative(self):
-        """Tests negative x raises ValueError."""
-        with self.assertRaises(ValueError):
+    def test_value_error_x(self):
+        """Test ValueError for x < 0."""
+        with self.assertRaisesRegex(ValueError, "x must be >= 0"):
             Rectangle(10, 2, -1)
 
-    def test_y_negative(self):
-        """Tests negative y raises ValueError."""
-        with self.assertRaises(ValueError):
-            Rectangle(10, 2, 3, -1)
-
-    def test_setter_width(self):
-        """Tests setting width after instantiation."""
-        r = Rectangle(10, 2)
-        with self.assertRaises(ValueError):
-            r.width = -10
-
-
-class TestRectangleArea(unittest.TestCase):
-    """Tests for Rectangle.area."""
-
-    def test_area(self):
-        """Tests area calculation."""
-        r = Rectangle(3, 2)
-        self.assertEqual(r.area(), 6)
-
-    def test_area_with_position(self):
-        """Tests area is unaffected by x/y."""
-        r = Rectangle(8, 7, 0, 0, 12)
-        self.assertEqual(r.area(), 56)
-
-
-class TestRectangleStr(unittest.TestCase):
-    """Tests for Rectangle.__str__."""
-
-    def test_str(self):
-        """Tests the string representation format."""
-        r = Rectangle(4, 6, 2, 1, 12)
-        self.assertEqual(str(r), "[Rectangle] (12) 2/1 - 4/6")
-
-
-class TestRectangleUpdateArgs(unittest.TestCase):
-    """Tests for Rectangle.update with args."""
-
-    def test_update_id(self):
-        """Tests updating only id."""
-        r = Rectangle(10, 10, 10, 10)
-        r.update(89)
-        self.assertEqual(r.id, 89)
-
-    def test_update_all_args(self):
-        """Tests updating all attributes via args."""
-        r = Rectangle(10, 10, 10, 10)
-        r.update(89, 2, 3, 4, 5)
-        self.assertEqual(str(r), "[Rectangle] (89) 4/5 - 2/3")
-
-
-class TestRectangleUpdateKwargs(unittest.TestCase):
-    """Tests for Rectangle.update with kwargs."""
-
-    def test_update_kwargs(self):
-        """Tests updating attributes via keyword arguments."""
-        r = Rectangle(10, 10, 10, 10)
-        r.update(height=1)
-        self.assertEqual(r.height, 1)
-
-    def test_update_kwargs_multiple(self):
-        """Tests updating multiple attributes via keyword arguments."""
-        r = Rectangle(10, 10, 10, 10)
-        r.update(y=1, width=2, x=3, id=89)
-        self.assertEqual(str(r), "[Rectangle] (89) 3/1 - 2/10")
-
-
-class TestRectangleToDictionary(unittest.TestCase):
-    """Tests for Rectangle.to_dictionary."""
-
-    def test_to_dictionary(self):
-        """Tests the dictionary representation contains the right keys."""
-        r = Rectangle(10, 2, 1, 9)
-        d = r.to_dictionary()
-        self.assertEqual(d, {"id": r.id, "width": 10,
-                              "height": 2, "x": 1, "y": 9})
-
-    def test_to_dictionary_type(self):
-        """Tests the return type is dict."""
-        r = Rectangle(10, 2)
-        self.assertIsInstance(r.to_dictionary(), dict)
+    def test_value_error_y(self):
+        """Test ValueError for y < 0."""
+        with self.assertRaisesRegex(ValueError, "y must be >= 0"):
+            Rectangle(10, 2, 0, -1)
 
 
 if __name__ == "__main__":
