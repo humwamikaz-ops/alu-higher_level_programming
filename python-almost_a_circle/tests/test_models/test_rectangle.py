@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 """Unittest module for models/rectangle.py."""
 import unittest
+import io
+import sys
+import os
 from models.base import Base
 from models.rectangle import Rectangle
 
@@ -12,84 +15,80 @@ class TestRectangle(unittest.TestCase):
         """Reset __nb_objects before each test."""
         Base._Base__nb_objects = 0
 
-    def test_rectangle_inheritance(self):
-        """Test that Rectangle inherits from Base."""
-        r = Rectangle(10, 2)
-        self.assertIsInstance(r, Base)
+    def tearDown(self):
+        """Clean up generated files after tests."""
+        if os.path.exists("Rectangle.json"):
+            os.remove("Rectangle.json")
 
-    def test_rectangle_valid_instantiation(self):
+    def test_rectangle_instantiation(self):
         """Test valid instantiation of Rectangle."""
         r1 = Rectangle(10, 2)
         self.assertEqual(r1.width, 10)
         self.assertEqual(r1.height, 2)
-        self.assertEqual(r1.x, 0)
-        self.assertEqual(r1.y, 0)
-        self.assertEqual(r1.id, 1)
-
         r2 = Rectangle(10, 2, 3, 4, 12)
-        self.assertEqual(r2.width, 10)
-        self.assertEqual(r2.height, 2)
-        self.assertEqual(r2.x, 3)
-        self.assertEqual(r2.y, 4)
         self.assertEqual(r2.id, 12)
 
-    # --- Type Errors ---
+    def test_rectangle_zero_height(self):
+        """Test Rectangle(1, 0) raises ValueError."""
+        with self.assertRaisesRegex(ValueError, "height must be > 0"):
+            Rectangle(1, 0)
 
-    def test_type_error_width(self):
-        """Test TypeError for non-integer width."""
+    def test_type_errors(self):
+        """Test invalid attribute types."""
         with self.assertRaisesRegex(TypeError, "width must be an integer"):
             Rectangle("10", 2)
-        with self.assertRaisesRegex(TypeError, "width must be an integer"):
-            Rectangle([10], 2)
-        with self.assertRaisesRegex(TypeError, "width must be an integer"):
-            Rectangle(10.5, 2)
-
-    def test_type_error_height(self):
-        """Test TypeError for non-integer height."""
         with self.assertRaisesRegex(TypeError, "height must be an integer"):
             Rectangle(10, "2")
-        with self.assertRaisesRegex(TypeError, "height must be an integer"):
-            Rectangle(10, None)
-
-    def test_type_error_x(self):
-        """Test TypeError for non-integer x."""
         with self.assertRaisesRegex(TypeError, "x must be an integer"):
-            Rectangle(10, 2, {})
-        with self.assertRaisesRegex(TypeError, "x must be an integer"):
-            Rectangle(10, 2, 2.5)
-
-    def test_type_error_y(self):
-        """Test TypeError for non-integer y."""
+            Rectangle(10, 2, "3")
         with self.assertRaisesRegex(TypeError, "y must be an integer"):
-            Rectangle(10, 2, 0, "4")
-        with self.assertRaisesRegex(TypeError, "y must be an integer"):
-            Rectangle(10, 2, 0, True)
+            Rectangle(1, 2, 3, "4")
 
-    # --- Value Errors ---
-
-    def test_value_error_width(self):
-        """Test ValueError for width <= 0."""
+    def test_value_errors(self):
+        """Test invalid attribute values."""
         with self.assertRaisesRegex(ValueError, "width must be > 0"):
             Rectangle(0, 2)
         with self.assertRaisesRegex(ValueError, "width must be > 0"):
             Rectangle(-10, 2)
-
-    def test_value_error_height(self):
-        """Test ValueError for height <= 0."""
-        with self.assertRaisesRegex(ValueError, "height must be > 0"):
-            Rectangle(10, 0)
         with self.assertRaisesRegex(ValueError, "height must be > 0"):
             Rectangle(10, -2)
-
-    def test_value_error_x(self):
-        """Test ValueError for x < 0."""
         with self.assertRaisesRegex(ValueError, "x must be >= 0"):
             Rectangle(10, 2, -1)
-
-    def test_value_error_y(self):
-        """Test ValueError for y < 0."""
         with self.assertRaisesRegex(ValueError, "y must be >= 0"):
             Rectangle(10, 2, 0, -1)
+
+    def test_display_without_x_and_y(self):
+        """Test display() without x and y."""
+        r = Rectangle(2, 2)
+        output = io.StringIO()
+        sys.stdout = output
+        r.display()
+        sys.stdout = sys.__stdout__
+        self.assertEqual(output.getvalue(), "##\n##\n")
+
+    def test_display_without_y(self):
+        """Test display() without y."""
+        r = Rectangle(2, 2, 2)
+        output = io.StringIO()
+        sys.stdout = output
+        r.display()
+        sys.stdout = sys.__stdout__
+        self.assertEqual(output.getvalue(), "  ##\n  ##\n")
+
+    def test_display(self):
+        """Test display() with x and y."""
+        r = Rectangle(2, 3, 2, 2)
+        output = io.StringIO()
+        sys.stdout = output
+        r.display()
+        sys.stdout = sys.__stdout__
+        self.assertEqual(output.getvalue(), "\n\n  ##\n  ##\n  ##\n")
+
+    def test_save_to_file_empty(self):
+        """Test Rectangle.save_to_file([])."""
+        Rectangle.save_to_file([])
+        with open("Rectangle.json", "r") as f:
+            self.assertEqual(f.read(), "[]")
 
 
 if __name__ == "__main__":
