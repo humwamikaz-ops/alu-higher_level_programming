@@ -1,17 +1,22 @@
 #!/usr/bin/python3
-"""Lists all states matching a user-provided name (not injection safe)."""
-import MySQLdb
+"""Displays all values in states table where name matches the argument."""
 import sys
+import MySQLdb
 
 if __name__ == "__main__":
-    db = MySQLdb.connect(host="localhost", port=3306,
-                          user=sys.argv[1], passwd=sys.argv[2],
-                          db=sys.argv[3])
-    cursor = db.cursor()
-    query = "SELECT * FROM states WHERE name = '{}' ORDER BY id ASC".format(
-        sys.argv[4])
-    cursor.execute(query)
-    for row in cursor.fetchall():
+    db = MySQLdb.connect(
+        host="localhost",
+        port=3306,
+        user=sys.argv[1],
+        passwd=sys.argv[2],
+        db=sys.argv[3]
+    )
+    cur = db.cursor()
+    query = "SELECT * FROM states WHERE BINARY name = '{}' ORDER BY id ASC"\
+        .format(sys.argv[4])
+    cur.execute(query)
+    rows = cur.fetchall()
+    for row in rows:
         print(row)
-    cursor.close()
+    cur.close()
     db.close()
