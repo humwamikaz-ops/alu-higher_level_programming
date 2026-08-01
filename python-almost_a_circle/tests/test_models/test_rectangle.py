@@ -4,6 +4,7 @@ import unittest
 import io
 import sys
 import os
+from unittest.mock import patch
 from models.base import Base
 from models.rectangle import Rectangle
 
@@ -21,6 +22,7 @@ class TestRectangle(unittest.TestCase):
             if os.path.exists(filename):
                 os.remove(filename)
 
+    # --- Instantiation Tests ---
     def test_rectangle_instantiation(self):
         """Test valid instantiation of Rectangle."""
         r1 = Rectangle(10, 2)
@@ -34,6 +36,7 @@ class TestRectangle(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "height must be > 0"):
             Rectangle(1, 0)
 
+    # --- Type & Value Error Tests ---
     def test_type_errors(self):
         """Test invalid attribute types."""
         with self.assertRaisesRegex(TypeError, "width must be an integer"):
@@ -58,43 +61,41 @@ class TestRectangle(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "y must be >= 0"):
             Rectangle(10, 2, 0, -1)
 
+    # --- Area Tests ---
     def test_area(self):
         """Test area method."""
         r = Rectangle(3, 2)
         self.assertEqual(r.area(), 6)
 
-    def test_display_without_x_and_y(self):
+    # --- Display Tests (Muted stdout) ---
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_display_without_x_and_y(self, mock_stdout):
         """Test display() without x and y."""
         r = Rectangle(2, 2)
-        output = io.StringIO()
-        sys.stdout = output
         r.display()
-        sys.stdout = sys.__stdout__
-        self.assertEqual(output.getvalue(), "##\n##\n")
+        self.assertEqual(mock_stdout.getvalue(), "##\n##\n")
 
-    def test_display_without_y(self):
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_display_without_y(self, mock_stdout):
         """Test display() without y."""
         r = Rectangle(2, 2, 2)
-        output = io.StringIO()
-        sys.stdout = output
         r.display()
-        sys.stdout = sys.__stdout__
-        self.assertEqual(output.getvalue(), "  ##\n  ##\n")
+        self.assertEqual(mock_stdout.getvalue(), "  ##\n  ##\n")
 
-    def test_display(self):
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_display(self, mock_stdout):
         """Test display() with x and y."""
         r = Rectangle(2, 3, 2, 2)
-        output = io.StringIO()
-        sys.stdout = output
         r.display()
-        sys.stdout = sys.__stdout__
-        self.assertEqual(output.getvalue(), "\n\n  ##\n  ##\n  ##\n")
+        self.assertEqual(mock_stdout.getvalue(), "\n\n  ##\n  ##\n  ##\n")
 
+    # --- String Representation Tests ---
     def test_str(self):
         """Test __str__ method."""
         r = Rectangle(4, 6, 2, 1, 12)
         self.assertEqual(str(r), "[Rectangle] (12) 2/1 - 4/6")
 
+    # --- Update Tests ---
     def test_update_args(self):
         """Test update method with *args."""
         r = Rectangle(10, 10, 10, 10, 1)
@@ -107,6 +108,7 @@ class TestRectangle(unittest.TestCase):
         r.update(height=1, width=2, x=3, y=4, id=89)
         self.assertEqual(str(r), "[Rectangle] (89) 3/4 - 2/1")
 
+    # --- Dictionary Tests ---
     def test_to_dictionary(self):
         """Test to_dictionary method."""
         r = Rectangle(10, 2, 1, 9, 1)
@@ -114,6 +116,7 @@ class TestRectangle(unittest.TestCase):
         expected = {'id': 1, 'width': 10, 'height': 2, 'x': 1, 'y': 9}
         self.assertEqual(res, expected)
 
+    # --- Save to File Tests ---
     def test_save_to_file_none(self):
         """Test Rectangle.save_to_file(None)."""
         Rectangle.save_to_file(None)
