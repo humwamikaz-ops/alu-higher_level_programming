@@ -1,9 +1,13 @@
 #!/usr/bin/python3
-"""fetches https://alu-intranet.hbtn.io/status using requests"""
+"""
+Python script that fetches status from intranet using requests.
+"""
 import requests
 
+
 if __name__ == "__main__":
-    response = requests.get("https://alu-intranet.hbtn.io/status")
+    url = "https://alx-intranet.hbtn.io/status"
+    r = requests.get(url)
     print("Body response:")
-    print("\t- type: {}".format(type(response.text)))
-    print("\t- content: {}".format(response.text))
+    print("\t- type: {}".format(type(r.text)))
+    print("\t- content: {}".format(r.text))
