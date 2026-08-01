@@ -21,7 +21,6 @@ class TestRectangle(unittest.TestCase):
             if os.path.exists(filename):
                 os.remove(filename)
 
-    # --- Instantiation Tests ---
     def test_rectangle_instantiation(self):
         """Test valid instantiation of Rectangle."""
         r1 = Rectangle(10, 2)
@@ -35,7 +34,6 @@ class TestRectangle(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "height must be > 0"):
             Rectangle(1, 0)
 
-    # --- Type & Value Error Tests ---
     def test_type_errors(self):
         """Test invalid attribute types."""
         with self.assertRaisesRegex(TypeError, "width must be an integer"):
@@ -60,13 +58,11 @@ class TestRectangle(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "y must be >= 0"):
             Rectangle(10, 2, 0, -1)
 
-    # --- Area Tests ---
     def test_area(self):
         """Test area method."""
         r = Rectangle(3, 2)
         self.assertEqual(r.area(), 6)
 
-    # --- Display Tests (Tasks 25, 26, 27, 28, 29) ---
     def test_display_without_x_and_y(self):
         """Test display() without x and y."""
         r = Rectangle(2, 2)
@@ -94,13 +90,11 @@ class TestRectangle(unittest.TestCase):
         sys.stdout = sys.__stdout__
         self.assertEqual(output.getvalue(), "\n\n  ##\n  ##\n  ##\n")
 
-    # --- String Representation Tests (Tasks 30-34) ---
     def test_str(self):
         """Test __str__ method."""
         r = Rectangle(4, 6, 2, 1, 12)
         self.assertEqual(str(r), "[Rectangle] (12) 2/1 - 4/6")
 
-    # --- Update Tests (Tasks 35-39) ---
     def test_update_args(self):
         """Test update method with *args."""
         r = Rectangle(10, 10, 10, 10, 1)
@@ -113,7 +107,6 @@ class TestRectangle(unittest.TestCase):
         r.update(height=1, width=2, x=3, y=4, id=89)
         self.assertEqual(str(r), "[Rectangle] (89) 3/4 - 2/1")
 
-    # --- Dictionary Tests (Tasks 40-41) ---
     def test_to_dictionary(self):
         """Test to_dictionary method."""
         r = Rectangle(10, 2, 1, 9, 1)
@@ -121,20 +114,19 @@ class TestRectangle(unittest.TestCase):
         expected = {'id': 1, 'width': 10, 'height': 2, 'x': 1, 'y': 9}
         self.assertEqual(res, expected)
 
-    # --- File Storage Tests (Tasks 59, 63, 64) ---
     def test_save_to_file_none(self):
         """Test Rectangle.save_to_file(None)."""
         Rectangle.save_to_file(None)
         with open("Rectangle.json", "r") as f:
             self.assertEqual(f.read(), "[]")
 
-    def test_save_to_file_empty(self):
+    def test_save_to_file_empty_list(self):
         """Test Rectangle.save_to_file([])."""
         Rectangle.save_to_file([])
         with open("Rectangle.json", "r") as f:
             self.assertEqual(f.read(), "[]")
 
-    def test_save_to_file_instance(self):
+    def test_save_to_file_rectangle_list(self):
         """Test Rectangle.save_to_file([Rectangle(1, 2)])."""
         Rectangle.save_to_file([Rectangle(1, 2)])
         self.assertTrue(os.path.exists("Rectangle.json"))
@@ -143,7 +135,8 @@ class TestRectangle(unittest.TestCase):
         """Test Rectangle.load_from_file() when file doesn't exist."""
         if os.path.exists("Rectangle.json"):
             os.remove("Rectangle.json")
-        self.assertEqual(Rectangle.load_from_file(), [])
+        res = Rectangle.load_from_file()
+        self.assertEqual(res, [])
 
     def test_load_from_file_exists(self):
         """Test Rectangle.load_from_file() when file exists."""

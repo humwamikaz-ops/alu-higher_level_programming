@@ -51,6 +51,13 @@ class TestSquare(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "y must be >= 0"):
             Square(1, 2, -3)
 
+    def test_to_dictionary(self):
+        """Test Square.to_dictionary()."""
+        s = Square(10, 2, 1, 1)
+        s_dict = s.to_dictionary()
+        expected = {'id': 1, 'size': 10, 'x': 2, 'y': 1}
+        self.assertEqual(s_dict, expected)
+
     def test_square_save_to_file_none(self):
         """Test Square.save_to_file(None)."""
         Square.save_to_file(None)
